@@ -155,7 +155,7 @@
         </div>
     </div>
 
-    <!-- Share Overlay -->
+    <!-- Share Overlay (Fixed to always show) -->
     <div id="share-overlay" class="overlay">
         <div class="modal-content relative p-6 w-full max-w-sm">
             <button onclick="closeOverlay('share-overlay')" class="absolute top-4 right-4 text-stone-400 hover:text-stone-600"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -166,6 +166,7 @@
             <button onclick="downloadShareImage()" class="w-full bg-stone-700 hover:bg-stone-800 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
                 <i data-lucide="download" class="w-4 h-4"></i> 이미지 저장
             </button>
+            <p class="text-xs text-stone-400 mt-2 text-center">저장된 이미지를 SNS에 공유해보세요</p>
         </div>
     </div>
 
@@ -191,7 +192,7 @@
     <!-- Main App -->
     <main id="app" class="w-full max-w-3xl bg-white rounded-xl shadow-2xl overflow-hidden min-h-[600px] flex flex-col relative border border-stone-200 z-10">
         
-        <!-- Header Image (Reliable Unsplash Image) -->
+        <!-- Header Image (Updated to reliable Unsplash URL) -->
         <div class="relative w-full h-48 bg-stone-200 overflow-hidden">
             <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?ixlib=rb-4.0.3&auto=format&fit=crop&w=1080&q=80" alt="Cover" class="w-full h-full object-cover opacity-90">
             <div class="absolute inset-0 bg-stone-900/30 flex flex-col items-center justify-center text-white">
@@ -336,12 +337,7 @@
             }
             generateTabs();
             renderPage(currentIndex);
-            
-            // Failsafe Loading removal
-            setTimeout(() => {
-                const loader = document.getElementById('loading');
-                if(loader) loader.style.display = 'none';
-            }, 1500); 
+            setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
         });
 
         // --- Core Functions ---
@@ -349,7 +345,6 @@
         
         function generateTabs() {
             tabContainer.innerHTML = '';
-            // 28 days -> Split 14 / 14
             const row1 = document.createElement('div');
             row1.className = 'flex overflow-x-auto no-scrollbar gap-2 px-4 scroll-smooth';
             const row2 = document.createElement('div');
@@ -483,7 +478,7 @@
             const originTxt = btn.innerHTML;
             btn.innerHTML = '⌛ 복사 중...'; btn.disabled = true;
             
-            const coverImg = "https://images.unsplash.com/photo-1544816155-12df9643f363?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+            const coverImg = "https://images.unsplash.com/photo-1493723843684-a6324ebc2e3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
             
             let html = `<div style="font-family: Arial, sans-serif; line-height: 1.6; color:#4a3b32;">
                 <div style="text-align:center; margin-bottom:50px;">
@@ -506,8 +501,7 @@
             });
             html += `</div>`;
 
-            const manualArea = document.getElementById('manual-copy-area');
-            manualArea.innerHTML = html;
+            document.getElementById('manual-copy-area').innerHTML = html;
             document.getElementById('export-overlay').style.display = 'flex';
             
             setTimeout(() => {
@@ -527,8 +521,13 @@
         }
         function copyToClipboardManual() { selectAllManual(); document.execCommand('copy'); alert("복사되었습니다!"); }
 
-        // --- Share & Utils ---
+        // --- Share & Utils (MODIFIED: Remove navigator.share) ---
         async function shareCurrentCard() {
+            const btn = document.getElementById('share-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<span class="animate-spin">⌛</span>`;
+            btn.disabled = true;
+
             const data = journalData[currentIndex];
             const entry = userEntries[currentIndex] || "";
             document.getElementById('share-header').textContent = data.chapter.toUpperCase();
@@ -547,24 +546,33 @@
             }
 
             try {
-                const canvas = await html2canvas(document.getElementById('share-card-template'), { scale: 2, useCORS: true, backgroundColor: '#fffefb' });
+                const canvas = await html2canvas(document.getElementById('share-card-template'), { 
+                    scale: 2, 
+                    useCORS: true, 
+                    backgroundColor: '#fffefb',
+                    allowTaint: true 
+                });
                 document.getElementById('generated-share-image').src = canvas.toDataURL('image/png');
-                if (navigator.share) {
-                    canvas.toBlob(blob => {
-                        const file = new File([blob], 'card.png', {type:'image/png'});
-                        navigator.share({ title:'2월 기록', files:[file] }).catch(()=>{ document.getElementById('share-overlay').style.display='flex'; });
-                    });
-                } else {
-                    document.getElementById('share-overlay').style.display='flex';
-                }
-            } catch(e) {}
+                
+                // Force overlay display always
+                document.getElementById('share-overlay').style.display = 'flex';
+
+            } catch(e) { 
+                console.error(e);
+                alert("이미지 생성 중 오류가 발생했습니다."); 
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
 
         function downloadShareImage() {
             const a = document.createElement('a');
             a.download = `2월기록_${journalData[currentIndex].date.replace(/[^a-zA-Z0-9]/g, '')}.png`;
             a.href = document.getElementById('generated-share-image').src;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
         }
 
         function openSettings() { document.getElementById('settings-overlay').style.display = 'flex'; }
