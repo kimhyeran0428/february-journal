@@ -5,19 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2월의 기록: 온기와 몰입</title>
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- html2canvas -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     
+    <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f5f0eb; /* Warm Beige Background */
-            color: #4a3b32; /* Dark Brown Text */
+            background-color: #f5f0eb;
+            color: #4a3b32;
         }
         
         .book-font {
@@ -46,7 +50,7 @@
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: rgba(60, 40, 30, 0.6); /* Warm Dark Overlay */
+            background-color: rgba(60, 40, 30, 0.6);
             z-index: 10000;
             justify-content: center; align-items: center;
         }
@@ -73,14 +77,14 @@
         
         .remove-image-btn {
             position: absolute; top: 6px; right: 6px;
-            background: rgba(121, 85, 72, 0.9); /* Brown button strong opacity */
+            background: rgba(121, 85, 72, 0.9);
             color: white; border-radius: 50%; width: 28px; height: 28px;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
             z-index: 50; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             transition: transform 0.1s;
         }
         .remove-image-btn:hover { transform: scale(1.1); background: rgba(180, 50, 50, 0.9); }
-        .remove-image-btn svg { pointer-events: none; } /* Icon click pass-through */
+        .remove-image-btn svg { pointer-events: none; }
 
         /* Share Template */
         #share-card-template {
@@ -101,6 +105,7 @@
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4 selection:bg-orange-100">
 
+    <!-- Settings Overlay -->
     <div id="settings-overlay" class="overlay">
         <div class="modal-content text-center">
             <h2 class="text-xl font-bold book-font text-orange-900 mb-6">데이터 관리 (2월)</h2>
@@ -129,6 +134,7 @@
         </div>
     </div>
 
+    <!-- Export Overlay -->
     <div id="export-overlay" class="overlay">
         <div class="modal-content text-center w-full max-w-lg">
             <div id="export-status-container">
@@ -149,6 +155,7 @@
         </div>
     </div>
 
+    <!-- Share Overlay -->
     <div id="share-overlay" class="overlay">
         <div class="modal-content relative p-6 w-full max-w-sm">
             <button onclick="closeOverlay('share-overlay')" class="absolute top-4 right-4 text-stone-400 hover:text-stone-600"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -162,6 +169,7 @@
         </div>
     </div>
 
+    <!-- Header -->
     <header class="w-full max-w-3xl flex flex-wrap gap-2 justify-between items-center mb-6 z-10">
         <div class="flex flex-col">
             <h1 class="text-xl md:text-2xl font-bold book-font text-stone-800">2월의 기록</h1>
@@ -180,8 +188,10 @@
         </div>
     </header>
 
+    <!-- Main App -->
     <main id="app" class="w-full max-w-3xl bg-white rounded-xl shadow-2xl overflow-hidden min-h-[600px] flex flex-col relative border border-stone-200 z-10">
         
+        <!-- Header Image (Reliable Unsplash Image) -->
         <div class="relative w-full h-48 bg-stone-200 overflow-hidden">
             <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?ixlib=rb-4.0.3&auto=format&fit=crop&w=1080&q=80" alt="Cover" class="w-full h-full object-cover opacity-90">
             <div class="absolute inset-0 bg-stone-900/30 flex flex-col items-center justify-center text-white">
@@ -196,10 +206,12 @@
             <div class="animate-pulse text-stone-400">페이지를 불러오는 중...</div>
         </div>
 
+        <!-- Tabs -->
         <div class="w-full bg-[#fdfbf9] border-b border-stone-200 py-3">
             <div id="tab-container" class="flex flex-col gap-2"></div>
         </div>
 
+        <!-- Top Bar -->
         <div class="bg-[#fdfbf9] px-6 py-4 border-b border-stone-100 flex justify-between items-center">
             <div class="flex flex-col">
                 <span id="chapter-display" class="text-xs font-bold text-orange-800 uppercase tracking-widest mb-1">Chapter 1</span>
@@ -213,6 +225,7 @@
             </div>
         </div>
 
+        <!-- Writing Area -->
         <div class="flex-1 p-6 md:p-10 flex flex-col justify-center">
             <div class="mb-8 text-center">
                 <h2 id="question-text" class="text-2xl md:text-3xl font-bold book-font leading-relaxed text-stone-800 break-keep"></h2>
@@ -246,6 +259,7 @@
             </div>
         </div>
 
+        <!-- Nav -->
         <div class="bg-[#fdfbf9] p-4 border-t border-stone-100 flex justify-between items-center">
             <button onclick="prevPage()" id="btn-prev" class="flex items-center gap-2 px-4 py-2 text-stone-500 hover:text-stone-800 disabled:opacity-30 transition"><i data-lucide="chevron-left" class="w-5 h-5"></i> 이전</button>
             <button onclick="nextPage()" id="btn-next" class="flex items-center gap-2 px-4 py-2 text-stone-500 hover:text-stone-800 disabled:opacity-30 transition">다음 <i data-lucide="chevron-right" class="w-5 h-5"></i></button>
@@ -254,6 +268,7 @@
 
     <footer class="mt-8 text-stone-400 text-xs text-center z-10"><p>작성된 내용은 브라우저에 자동 저장됩니다.</p></footer>
 
+    <!-- Hidden Share Template -->
     <div id="share-card-template">
         <div style="font-size: 14px; color: #a1887f; margin-bottom: 20px; letter-spacing: 2px;" id="share-header">FEBRUARY RECORD</div>
         <div style="font-size: 20px; font-weight: bold; color: #4e342e; margin-bottom: 5px;" id="share-date"></div>
@@ -300,7 +315,6 @@
 
         // --- Data Handling ---
         let currentIndex = 0;
-        // CRITICAL: Using new keys to separate from January data
         const STORAGE_KEY = 'february_journal_entries';
         const STORAGE_KEY_IMAGES = 'february_journal_images';
         
@@ -322,7 +336,12 @@
             }
             generateTabs();
             renderPage(currentIndex);
-            setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+            
+            // Failsafe Loading removal
+            setTimeout(() => {
+                const loader = document.getElementById('loading');
+                if(loader) loader.style.display = 'none';
+            }, 1500); 
         });
 
         // --- Core Functions ---
@@ -451,14 +470,10 @@
             if(e) e.stopPropagation();
             if(confirm("삭제하시겠습니까?")) {
                 const idx = parseInt(idxStr);
-                const images = userImages[currentIndex];
-                // Safety check
-                if (images && images.length > idx) {
-                    images.splice(idx, 1);
-                    if(images.length === 0) delete userImages[currentIndex];
-                    localStorage.setItem(STORAGE_KEY_IMAGES, JSON.stringify(userImages));
-                    renderGallery(currentIndex);
-                }
+                userImages[currentIndex].splice(idx, 1);
+                if(userImages[currentIndex].length===0) delete userImages[currentIndex];
+                localStorage.setItem(STORAGE_KEY_IMAGES, JSON.stringify(userImages));
+                renderGallery(currentIndex);
             }
         }
 
@@ -468,7 +483,7 @@
             const originTxt = btn.innerHTML;
             btn.innerHTML = '⌛ 복사 중...'; btn.disabled = true;
             
-            const coverImg = "https://images.unsplash.com/photo-1544816155-12df9643f363?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"; // UPDATED COVER
+            const coverImg = "https://images.unsplash.com/photo-1544816155-12df9643f363?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
             
             let html = `<div style="font-family: Arial, sans-serif; line-height: 1.6; color:#4a3b32;">
                 <div style="text-align:center; margin-bottom:50px;">
@@ -491,7 +506,8 @@
             });
             html += `</div>`;
 
-            document.getElementById('manual-copy-area').innerHTML = html;
+            const manualArea = document.getElementById('manual-copy-area');
+            manualArea.innerHTML = html;
             document.getElementById('export-overlay').style.display = 'flex';
             
             setTimeout(() => {
@@ -511,13 +527,8 @@
         }
         function copyToClipboardManual() { selectAllManual(); document.execCommand('copy'); alert("복사되었습니다!"); }
 
-        // --- Share & Utils (Modified for unconditional overlay) ---
+        // --- Share & Utils ---
         async function shareCurrentCard() {
-            const btn = document.querySelector('#share-btn') || document.querySelector('button[onclick="shareCurrentCard()"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `<span class="animate-spin">⌛</span>`;
-            btn.disabled = true;
-
             const data = journalData[currentIndex];
             const entry = userEntries[currentIndex] || "";
             document.getElementById('share-header').textContent = data.chapter.toUpperCase();
@@ -536,17 +547,61 @@
             }
 
             try {
-                const canvas = await html2canvas(document.getElementById('share-card-template'), { 
-                    scale: 2, 
-                    useCORS: true, 
-                    backgroundColor: '#fffefb',
-                    allowTaint: true 
-                });
+                const canvas = await html2canvas(document.getElementById('share-card-template'), { scale: 2, useCORS: true, backgroundColor: '#fffefb' });
                 document.getElementById('generated-share-image').src = canvas.toDataURL('image/png');
-                
-                // FORCE SHOW OVERLAY regardless of navigator.share
-                document.getElementById('share-overlay').style.display='flex';
-                
-            } catch(e) { 
-                console.error(e);
-                alert("이미지
+                if (navigator.share) {
+                    canvas.toBlob(blob => {
+                        const file = new File([blob], 'card.png', {type:'image/png'});
+                        navigator.share({ title:'2월 기록', files:[file] }).catch(()=>{ document.getElementById('share-overlay').style.display='flex'; });
+                    });
+                } else {
+                    document.getElementById('share-overlay').style.display='flex';
+                }
+            } catch(e) {}
+        }
+
+        function downloadShareImage() {
+            const a = document.createElement('a');
+            a.download = `2월기록_${journalData[currentIndex].date.replace(/[^a-zA-Z0-9]/g, '')}.png`;
+            a.href = document.getElementById('generated-share-image').src;
+            a.click();
+        }
+
+        function openSettings() { document.getElementById('settings-overlay').style.display = 'flex'; }
+        function closeOverlay(id) { document.getElementById(id).style.display = 'none'; }
+        function openGoogleDocs() { window.open('https://doc.new', '_blank'); closeOverlay('export-overlay'); }
+        
+        function backupData() {
+            const data = { entries: userEntries, images: userImages, date: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'february_backup.json';
+            a.click();
+            closeOverlay('settings-overlay');
+        }
+        function restoreData(e) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const parsed = JSON.parse(event.target.result);
+                if (parsed.entries) { userEntries = parsed.entries; localStorage.setItem(STORAGE_KEY, JSON.stringify(userEntries)); }
+                if (parsed.images) { userImages = parsed.images; localStorage.setItem(STORAGE_KEY_IMAGES, JSON.stringify(userImages)); }
+                renderPage(currentIndex);
+                alert("복구 완료!");
+                closeOverlay('settings-overlay');
+            };
+            reader.readAsText(e.target.files[0]);
+        }
+        function resetData() {
+            if(confirm("2월 데이터를 정말 삭제하시겠습니까?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem(STORAGE_KEY_IMAGES);
+                userEntries = {}; userImages = {};
+                renderPage(currentIndex);
+                alert("초기화 완료");
+                closeOverlay('settings-overlay');
+            }
+        }
+    </script>
+</body>
+</html>
